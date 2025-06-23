@@ -65,17 +65,15 @@ def load_players(csv_path: pathlib.Path, db_path: pathlib.Path) -> None:
     )
 
     # Log lineage
-    conn.execute(
-        """
-        INSERT INTO bridge_duckdb_sources (fact_table, record_pk, source_id)
-        SELECT
-            'dim_player',
-            CAST(player_id AS VARCHAR),
+    conn.execute("""
+        INSERT INTO bridge_duckdb_sources 
+        (fact_table, record_pk, source_id)
+        SELECT 
+            'dim_player', 
+            CAST(player_id AS VARCHAR), 
             ?
         FROM players_df
-        """,
-        [SOURCE_ID_KAGGLE],
-    )
+    """, [SOURCE_ID_KAGGLE])
 
     conn.execute("COMMIT")
     print(f"Loaded {len(players)} players into {db_path}.")
@@ -99,4 +97,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    load_players(args.csv, args.db) 
+    load_players(args.csv, args.db)
