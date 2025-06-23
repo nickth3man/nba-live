@@ -311,13 +311,16 @@ def load_games(conn: duckdb.DuckDBPyConnection,
 def main():
     """Example usage."""
     # Connect to DuckDB
-    db_path = 'nba_warehouse.duckdb'
+    db_path = 'nba_live.duckdb'
     logger.info(f"Connecting to database: {db_path}")
     conn = duckdb.connect(db_path)
     
     # Define data path
-    # Assumes a 'data/kaggle' directory in the project root
-    csv_file = Path(__file__).parent.parent.parent / 'data' / 'kaggle' / 'nba_games.csv'
+    # Default dataset path inside the project
+    csv_file = (
+        Path(__file__).parent.parent.parent / 'data' / 'kaggle' /
+        'wyattowalsh_basketball' / 'csv' / 'game.csv'
+    )
     
     if not csv_file.exists():
         logger.error(f"Data file not found: {csv_file}")
