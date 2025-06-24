@@ -6,9 +6,9 @@ This component is designated for housing all scripts, dashboards, and alerting c
 
 ## Key Responsibilities
 
-*   Ensures the ongoing quality and integrity of the data.
-*   Monitors the health and performance of the ETL pipelines.
-*   Provides alerting mechanisms for data or pipeline failures.
+* Ensures the ongoing quality and integrity of the data.
+* Monitors the health and performance of the ETL pipelines.
+* Provides alerting mechanisms for data or pipeline failures.
 
 ## Structure
 
@@ -18,8 +18,8 @@ This component is designated for housing all scripts, dashboards, and alerting c
 
 ## Roadmap
 
-1.  Develop data quality validation scripts.
-2.  Set up a dashboard to visualize pipeline health and data metrics.
-3.  Implement an alerting system for critical failures.
+1. Develop data quality validation scripts.
+2. Set up a dashboard to visualize pipeline health and data metrics.
+3. Implement an alerting system for critical failures.
 
 *For project-wide planning, see the [full roadmap](../context/PLAN.md).*

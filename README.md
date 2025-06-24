@@ -1,6 +1,8 @@
 
 # NBA Live
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/nickth3man/nba-live)
+
 **A complete, local-first NBA database and data processing pipeline.**
 
 This project's primary goal is to build a comprehensive, historically accurate, and locally accessible NBA database using modern data stack principles. It is designed to serve as a foundational dataset for analytics, machine learning, and application development.
