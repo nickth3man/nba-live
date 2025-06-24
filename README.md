@@ -1,41 +1,44 @@
-# NBA-Live
+# NBA Live
 
-NBA-Live is an open-source, local analytics warehouse that archives every NBA
-season from 1946-present and exposes clean, auditable data for research,
-betting models, and fan exploration.
+**A complete, local-first NBA database and data processing pipeline.**
+
+This project's primary goal is to build a comprehensive, historically accurate, and locally accessible NBA database using modern data stack principles. It is designed to serve as a foundational dataset for analytics, machine learning, and application development.
+
+The project has shifted from its initial PostgreSQL and `sqlc` proof-of-concept to a more flexible and embedded solution using **DuckDB**.
+
+---
 
 ## Current Status
 
-| Phase | Description | State |
-|-------|-------------|-------|
-| 0 | Repository bootstrap, CI, Poetry | ✅ Complete |
-| 1 | Research & source assessment (35+ repos) | ✅ Complete |
-| 2 | Database design – DuckDB star schema, audit layer | 🚧 In progress |
-| 3 | Modern-era ETL pipeline | ⏳ Not started |
+| Phase                                      | Description                                    | State         |
+|--------------------------------------------|------------------------------------------------|---------------|
+| **Phase 1: Research & Planning**           | Define project goals and architecture.         | ✅ Complete   |
+| **Phase 2: Database Design**               | Schema defined, implementing tables.           | 🚧 In progress |
+| **Phase 3: Modern-era ETL Pipeline**       | Build loaders for modern NBA data (2000-present). | 🚧 In progress |
+| **Phase 4: Historical-era ETL Pipeline**   | Build loaders for historical data (pre-2000).  | ⏳ Not started |
+| **Phase 5: AI Query Agent**                | Implement a natural language query interface.  | ⏳ Not started |
 
-Latest progress (2025-06-23):
-* Replaced Postgres plan with DuckDB for local columnar analytics.
-* Drafted full star-schema DDL (`nba_live/db/ddl/00_create_schema.sql`).
-* Added Kaggle player loader stub with lineage logging.
-* Updated docs/architecture and dependencies.
+**Latest progress:**
+*   The full star-schema DDL has been drafted in [`nba_live/db/ddl/00_create_schema.sql`](nba_live/db/ddl/00_create_schema.sql).
+*   Initial ETL loaders for Kaggle data have been built.
+
+---
 
 ## Quick Start
 
-```bash
-# Install dependencies
-poetry install
+To get started, clone the repository and run one of the existing ETL scripts:
 
-# Create DuckDB file and load sample Kaggle players
-poetry run python -m nba_live.etl.kaggle.load_kaggle_players \
-  --csv data/sample/players.csv \
-  --db nba_live.duckdb
+```bash
+# Load game data from the Kaggle source
+python nba_live/etl/kaggle/load_kaggle_games.py
 ```
 
-## Roadmap (Condensed)
-1. Complete remaining dimension & fact tables.
-2. Build ETL loaders for games, boxscores, shots, play-by-play.
-3. Implement data-quality scoring & audit dashboards.
-4. Add LangChain-powered FastAPI for natural-language queries.
+## Roadmap
 
-See `context/PLAN.md` for the full roadmap.
+The immediate focus is on completing the ETL pipeline for the modern era.
 
+1.  **Finalize ETL Loaders:** Complete and test all data loaders for the modern era.
+2.  **Implement Database Migrations:** Introduce a formal migration framework (e.g., `yoyo-migrations`).
+3.  **Develop Test Suite:** Build out the `pytest` suite to ensure data quality and code correctness.
+
+For more detailed planning, see the [full project plan](context/PLAN.md).
