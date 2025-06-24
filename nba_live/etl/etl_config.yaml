@@ -1,0 +1,9 @@
+database:
+  path: "nba_live.duckdb"
+
+data_sources:
+  kaggle_basketball:
+    base_path: "data/kaggle/wyattowalsh_basketball/csv"
+    games: "game.csv"
+    teams: "team.csv"
+    players: "player.csv"

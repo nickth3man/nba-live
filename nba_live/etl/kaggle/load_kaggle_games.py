@@ -5,7 +5,10 @@ This module loads game dimension data from CSV files into the
 DuckDB star schema, maintaining full data lineage.
 """
 
+
 import logging
+import yaml
+
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -24,17 +27,36 @@ logger = logging.getLogger(__name__)
 SOURCE_ID_KAGGLE = 1
 
 
+def get_project_root() -> Path:
+    """Find project root by looking for pyproject.toml"""
+    current = Path.cwd()
+    while current != current.parent:
+        if (current / 'pyproject.toml').exists():
+            return current
+        current = current.parent
+    # Fallback to CWD if not found
+    return Path.cwd()
+
+
+def load_config(root_path: Path) -> Dict[str, Any]:
+    """Load YAML configuration."""
+    config_path = root_path / 'nba_live' / 'etl' / 'etl_config.yaml'
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
+
+
 class GameDataValidator:
     """Validates game data before loading."""
     
     @staticmethod
     def validate_required_columns(df: pd.DataFrame) -> List[str]:
-        """Check for required columns."""
-        required = {
-            'GAME_ID', 'GAME_DATE_EST', 'SEASON',
-            'HOME_TEAM_ID', 'VISITOR_TEAM_ID'
+        """Check for required columns in RAW format."""
+        # These are the actual column names in the CSV
+        required_raw = {
+            'game_id', 'game_date', 'season_id',
+            'team_id_home', 'team_id_away'
         }
-        missing = required - set(df.columns)
+        missing = required_raw - set(df.columns)
         return list(missing)
     
     @staticmethod
@@ -101,64 +123,28 @@ class GameETLMetrics:
 
 
 def transform_game_data(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Transform raw Kaggle data to match star schema.
-    
-    Handles various Kaggle dataset formats and normalizes
-    to our standard schema.
-    """
-    # Create a copy to avoid modifying original
+    """Transform raw Kaggle data to match star schema."""
     games = df.copy()
     
-    # Standardize column names (handle multiple formats)
-    column_mapping = {
-        # wyattowalsh/basketball format
-        'GAME_DATE_EST': 'game_date',
-        'GAME_ID': 'game_id',
-        'HOME_TEAM_ID': 'home_team_id',
-        'VISITOR_TEAM_ID': 'away_team_id',
-        'SEASON': 'season_id',
-        # Alternative formats
-        'gamedate': 'game_date',
-        'gameid': 'game_id',
-        'hometeamid': 'home_team_id',
-        'awayteamid': 'away_team_id',
-        'visitorteamid': 'away_team_id',
-        'season_year': 'season_id'
-    }
+    # Add game_type (not in raw data)
+    if 'game_type' not in games.columns:
+        games['game_type'] = 'Regular'  # Default
     
-    # Apply mapping
-    games.rename(columns=column_mapping, inplace=True)
+    # Rename to match dim_game schema
+    games = games.rename(columns={
+        'team_id_home': 'home_team_id',
+        'team_id_away': 'away_team_id'
+    })
     
-    # Ensure game_date is datetime
-    if 'game_date' in games.columns:
-        games['game_date'] = pd.to_datetime(
-            games['game_date'], 
-            errors='coerce'
-        )
+    # Convert date
+    games['game_date'] = pd.to_datetime(games['game_date'], errors='coerce')
     
-    # Extract game_type if available, otherwise default
-    if 'playoffs' in games.columns:
-        games['game_type'] = games['playoffs'].map({
-            0: 'Regular',
-            1: 'Playoff'
-        })
-    elif 'game_type' not in games.columns:
-        # Default to Regular if not specified
-        games['game_type'] = 'Regular'
-    
-    # Select only columns we need
-    required_columns = [
-        'game_id', 'game_date', 'season_id', 
+    final_columns = [
+        'game_id', 'game_date', 'season_id',
         'game_type', 'home_team_id', 'away_team_id'
     ]
     
-    # Add missing columns with None
-    for col in required_columns:
-        if col not in games.columns:
-            games[col] = None
-    
-    return games[required_columns]
+    return games[final_columns]
 
 
 def load_games(conn: duckdb.DuckDBPyConnection, 
@@ -185,164 +171,126 @@ def load_games(conn: duckdb.DuckDBPyConnection,
     validator = GameDataValidator()
     
     try:
-        # Read CSV
         logger.info(f"Reading CSV from {csv_path}")
-        df = pd.read_csv(csv_path, low_memory=False)
-        metrics.total_rows = len(df)
-        logger.info(f"Found {metrics.total_rows} rows")
         
-        # Validate required columns exist
-        missing_cols = validator.validate_required_columns(df)
-        if missing_cols:
-            error_msg = f"Missing required columns: {missing_cols}"
-            logger.error(error_msg)
-            raise ValueError(error_msg)
-        
-        # Transform data
-        logger.info("Transforming data to match schema")
-        games = transform_game_data(df)
-        
-        # Process in batches for better performance
-        for batch_start in range(0, len(games), batch_size):
-            batch_end = min(batch_start + batch_size, len(games))
-            batch = games.iloc[batch_start:batch_end].copy()
+        # Use context manager for transaction
+        with conn.cursor() as cur:
+            cur.execute("BEGIN TRANSACTION;")
             
-            # Validate each row in batch
-            valid_rows = []
-            for i, (_, row) in enumerate(batch.iterrows()):
-                row_num = batch_start + i + 1
-                
-                # Validate game_id
-                if not validator.validate_game_id(row['game_id']):
-                    metrics.add_error(
-                        row_num, 'invalid_game_id',
-                        f"Invalid game_id: {row['game_id']}"
-                    )
-                    metrics.skipped_rows += 1
-                    continue
-                
-                # Validate date
-                if pd.isna(row['game_date']):
-                    metrics.add_error(
-                        row_num, 'invalid_date',
-                        "Missing game_date"
-                    )
-                    metrics.skipped_rows += 1
-                    continue
-                
-                valid_rows.append(row)
-            
-            # Load valid rows
-            if valid_rows:
-                valid_df = pd.DataFrame(valid_rows)
-                
-                try:
-                    conn.execute("BEGIN TRANSACTION")
+            try:
+                for i, chunk in enumerate(pd.read_csv(
+                    csv_path, chunksize=batch_size, low_memory=False
+                )):
+                    metrics.total_rows += len(chunk)
                     
-                    # Register dataframe
-                    conn.register("games_batch", valid_df)
+                    # Remove duplicates before processing
+                    chunk.drop_duplicates(subset=['game_id'], inplace=True)
                     
-                    # Insert games (UPDATE if exists)
-                    conn.execute("""
-                        INSERT INTO dim_game 
-                        SELECT * FROM games_batch
-                        ON CONFLICT (game_id) 
-                        DO UPDATE SET
-                            game_date = EXCLUDED.game_date,
-                            season_id = EXCLUDED.season_id,
-                            game_type = EXCLUDED.game_type,
-                            home_team_id = EXCLUDED.home_team_id,
-                            away_team_id = EXCLUDED.away_team_id
+                    # Validate raw columns before transform
+                    missing_cols = validator.validate_required_columns(chunk)
+                    if missing_cols:
+                        raise ValueError(f"Missing required columns: {missing_cols}")
+
+                    # Transform data
+                    games_df = transform_game_data(chunk)
+                    
+                    # Add lineage columns
+                    games_df['source_id'] = SOURCE_ID_KAGGLE
+                    games_df['load_timestamp'] = datetime.now()
+                    
+                    # Insert into DuckDB
+                    cur.execute("""
+                        INSERT INTO nba_prod.dim_game (
+                            game_id,
+                            game_date,
+                            season_id,
+                            game_type,
+                            home_team_id,
+                            away_team_id,
+                            source_id,
+                            load_timestamp
+                        )
+                        SELECT
+                            game_id,
+                            game_date,
+                            season_id,
+                            game_type,
+                            home_team_id,
+                            away_team_id,
+                            source_id,
+                            load_timestamp
+                        FROM games_df
+                        ON CONFLICT (game_id) DO UPDATE SET
+                            game_date = excluded.game_date,
+                            season_id = excluded.season_id,
+                            game_type = excluded.game_type,
+                            home_team_id = excluded.home_team_id,
+                            away_team_id = excluded.away_team_id,
+                            source_id = excluded.source_id,
+                            load_timestamp = excluded.load_timestamp;
                     """)
                     
-                    # Record lineage
-                    conn.execute("""
-                        INSERT INTO bridge_duckdb_sources 
-                        (fact_table, record_pk, source_id)
-                        SELECT 
-                            'dim_game',
-                            CAST(game_id AS VARCHAR),
-                            ?
-                        FROM games_batch
-                        ON CONFLICT (fact_table, record_pk) 
-                        DO UPDATE SET
-                            updated_at = CURRENT_TIMESTAMP
-                    """, [SOURCE_ID_KAGGLE])
-                    
-                    conn.execute("COMMIT")
-                    
-                    metrics.loaded_rows += len(valid_rows)
-                    logger.debug(
-                        f"Loaded batch {batch_start}-{batch_end}"
-                    )
-                    
-                except Exception as e:
-                    conn.execute("ROLLBACK")
-                    logger.error(
-                        f"Failed to load batch {batch_start}-{batch_end}: {e}"
-                    )
-                    # Record batch error
-                    metrics.add_error(
-                        batch_start, 'batch_load_error',
-                        str(e)
-                    )
+                    metrics.loaded_rows += len(games_df)
                 
-                finally:
-                    # Cleanup
-                    conn.unregister("games_batch")
-        
-        # Check success rate
-        if metrics.success_rate < 0.95:
-            logger.warning(
-                f"Low success rate: {metrics.success_rate:.2%}"
-            )
-        
+                cur.execute("COMMIT;")
+                logger.info("Transaction committed.")
+                
+            except Exception as e:
+                cur.execute("ROLLBACK;")
+                logger.error(f"Transaction rolled back due to error: {e}")
+                raise
+
+    except FileNotFoundError:
+        logger.error(f"File not found: {csv_path}")
+        metrics.add_error(0, "File Not Found", f"CSV file not found at {csv_path}")
     except Exception as e:
-        logger.error(f"Fatal error in ETL process: {e}")
-        raise
-    
-    finally:
-        # Always log summary
-        metrics.log_summary()
-    
+        logger.error(f"An unexpected error occurred: {e}")
+        metrics.add_error(0, "General Error", str(e))
+        
     return metrics
 
 
-def main():
-    """Example usage."""
-    # Connect to DuckDB
-    db_path = 'nba_live.duckdb'
-    logger.info(f"Connecting to database: {db_path}")
-    conn = duckdb.connect(db_path)
+def run_verification_queries(conn: duckdb.DuckDBPyConnection):
+    """Run post-load verification queries."""
+    logger.info("Running verification queries...")
+    total_games = conn.execute("SELECT COUNT(*) FROM nba_prod.dim_game;").fetchone()[0]
+    logger.info(f"Total games in dim_game: {total_games}")
     
-    # Define data path
-    # Default dataset path inside the project
-    csv_file = (
-        Path(__file__).parent.parent.parent / 'data' / 'kaggle' /
-        'wyattowalsh_basketball' / 'csv' / 'game.csv'
-    )
-    
-    if not csv_file.exists():
-        logger.error(f"Data file not found: {csv_file}")
-        logger.error("Please download the 'wyattowalsh/basketball' dataset from Kaggle and place 'nba_games.csv' in the 'data/kaggle' directory.")
-        return
+    latest_game = conn.execute("SELECT MAX(game_date) FROM nba_prod.dim_game;").fetchone()[0]
+    logger.info(f"Latest game date: {latest_game}")
 
-    # Load games
-    logger.info("Starting ETL process for games...")
-    metrics = load_games(conn, str(csv_file))
+
+def main():
+    """Main execution block."""
+    project_root = get_project_root()
+    config = load_config(project_root)
     
-    # Check results
+    db_path = project_root / config['database']['path']
+    
+    kaggle_base_path = config['data_sources']['kaggle_basketball']['base_path']
+    games_file = config['data_sources']['kaggle_basketball']['games']
+    csv_path = project_root / kaggle_base_path / games_file
+
+    logger.info(f"Project root: {project_root}")
+    logger.info(f"DB path: {db_path}")
+    logger.info(f"CSV path: {csv_path}")
+
     try:
-        result = conn.execute(
-            "SELECT COUNT(*) as game_count FROM dim_game"
-        ).fetchone()
-        if result:
-            logger.info(f"Total games in database: {result[0]}")
+        conn = duckdb.connect(str(db_path))
+        logger.info("Successfully connected to DuckDB.")
+        
+        metrics = load_games(conn, str(csv_path))
+        metrics.log_summary()
+        
+        if metrics.loaded_rows > 0:
+            run_verification_queries(conn)
+            
     except Exception as e:
-        logger.error(f"Failed to query database for results: {e}")
-    
-    conn.close()
-    logger.info("Database connection closed.")
+        logger.error(f"ETL process failed: {e}")
+    finally:
+        if 'conn' in locals() and conn:
+            conn.close()
+            logger.info("DuckDB connection closed.")
 
 
 if __name__ == "__main__":
