@@ -1,3 +1,4 @@
+
 # NBA Live
 
 **A complete, local-first NBA database and data processing pipeline.**
@@ -19,8 +20,9 @@ The project has shifted from its initial PostgreSQL and `sqlc` proof-of-concept 
 | **Phase 5: AI Query Agent**                | Implement a natural language query interface.  | ⏳ Not started |
 
 **Latest progress:**
-*   The full star-schema DDL has been drafted in [`nba_live/db/ddl/00_create_schema.sql`](nba_live/db/ddl/00_create_schema.sql).
-*   Initial ETL loaders for Kaggle data have been built.
+
+* The full star-schema DDL has been drafted in [`nba_live/db/ddl/00_create_schema.sql`](nba_live/db/ddl/00_create_schema.sql).
+* Initial ETL loaders for Kaggle data have been built.
 
 ---
 
@@ -37,8 +39,8 @@ python nba_live/etl/kaggle/load_kaggle_games.py
 
 The immediate focus is on completing the ETL pipeline for the modern era.
 
-1.  **Finalize ETL Loaders:** Complete and test all data loaders for the modern era.
-2.  **Implement Database Migrations:** Introduce a formal migration framework (e.g., `yoyo-migrations`).
-3.  **Develop Test Suite:** Build out the `pytest` suite to ensure data quality and code correctness.
+1. **Finalize ETL Loaders:** Complete and test all data loaders for the modern era.
+2. **Implement Database Migrations:** Introduce a formal migration framework (e.g., `yoyo-migrations`).
+3. **Develop Test Suite:** Build out the `pytest` suite to ensure data quality and code correctness.
 
 For more detailed planning, see the [full project plan](context/PLAN.md).
