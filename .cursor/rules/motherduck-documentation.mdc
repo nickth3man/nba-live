@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+[motherduck-llms.txt](mdc:misc/motherduck-llms.txt) contains links to the motherduck documentation

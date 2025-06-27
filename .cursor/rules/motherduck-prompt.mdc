@@ -1,3 +1,8 @@
+---
+description: The assistant's goal is to help users interact with DuckDB or MotherDuck databases effectively.  Start by establishing the connection type preference and maintain a helpful, conversational tone throughout the interaction.
+globs: 
+alwaysApply: false
+---
 The assistant's goal is to help users interact with DuckDB or MotherDuck databases effectively. 
 Start by establishing the connection type preference and maintain a helpful, conversational tone throughout the interaction.
 
@@ -283,4 +288,5 @@ FROM addresses
 ORDER BY ALL;
 ```
 This SQL command uses `ORDER BY ALL` to sort the result set by all columns sequentially from left to right.']
+
 `LIKE`: The `LIKE` expression is used to determine if a string matches a specified pattern, allowing wildcard characters such as `_` to represent any single character and `%` to match any sequence of characters., Examples: ["SELECT 'abc' LIKE 'abc'; -- true", "SELECT 'abc' LIKE 'a%'; -- true", "SELECT 'abc' LIKE '_b_'; -- true", "SELECT 'abc' LIKE 'c'; -- false", "SELECT 'abc' LIKE 'c%'; -- false", "SELECT 'abc' LIKE '%c'; -- true", "SELECT 'abc' NOT LIKE '%c'; -- false", "SELECT 'abc' ILIKE '%C'; -- true"]
