@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "motherduck": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-motherduck",
+        "--db-path",
+        "md:",
+        "--motherduck-token",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5pY2t0aDNtYW5AZ21haWwuY29tIiwic2Vzc2lvbiI6Im5pY2t0aDNtYW4uZ21haWwuY29tIiwicGF0IjoiX1ItLVkxUUg5cFdsWEwyZnNGSEdFc3FEb3dpbEl3RTM4bGExZkJMT0IwRSIsInVzZXJJZCI6IjFiODdmMDRkLTA2OGQtNDQ3Zi1hNjg2LTBkMzNlMDY2ZTJjYyIsImlzcyI6Im1kX3BhdCIsInJlYWRPbmx5IjpmYWxzZSwidG9rZW5UeXBlIjoicmVhZF93cml0ZSIsImlhdCI6MTc1MTA5OTgxM30.H0jtB-j8xAiH23SpeAa2ipaEAAzWy3fdW-FVAbAc-5w"
+      ]
+    }
+  }
+}
