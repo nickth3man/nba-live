@@ -138,5 +138,3 @@ MotherDuck provides serverless DuckDB with cloud object-storage backing, meaning
 - **Add advanced stats** (e.g., RAPM, lineup data) in new tables.
 - **Build dashboards** (Streamlit, DuckDB + Vega) to visualize league trends.
 
-Feel free to open issues or PRs with new analyses!  
-_Enjoy exploring 75 + years of NBA history._
