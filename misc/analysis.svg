@@ -1,0 +1,239 @@
+<svg viewBox="0 0 1400 1000"
+    xmlns="http://www.w3.org/2000/svg">
+    <!-- Title -->
+    <text x="700" y="30" text-anchor="middle" font-size="24" font-weight="bold">NBA Database Entity Relationship Diagram</text>
+
+    <!-- Player Entity Group -->
+    <g id="player-group">
+        <!-- Player table -->
+        <rect x="50" y="60" width="200" height="120" fill="#e8f4f8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="150" y="85" text-anchor="middle" font-weight="bold" font-size="14">player</text>
+        <line x1="50" y1="95" x2="250" y2="95" stroke="#2c3e50"/>
+        <text x="60" y="115" font-size="12">PK: id (BIGINT)</text>
+        <text x="60" y="130" font-size="12">full_name</text>
+        <text x="60" y="145" font-size="12">first_name</text>
+        <text x="60" y="160" font-size="12">last_name</text>
+        <text x="60" y="175" font-size="12">is_active</text>
+
+        <!-- Common Player Info table -->
+        <rect x="50" y="210" width="240" height="280" fill="#e8f4f8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="170" y="235" text-anchor="middle" font-weight="bold" font-size="14">common_player_info</text>
+        <line x1="50" y1="245" x2="290" y2="245" stroke="#2c3e50"/>
+        <text x="60" y="265" font-size="12">PK: person_id (BIGINT)</text>
+        <text x="60" y="280" font-size="12">FK: team_id → team.id</text>
+        <text x="60" y="295" font-size="12">first_name, last_name</text>
+        <text x="60" y="310" font-size="12">birthdate, height, weight</text>
+        <text x="60" y="325" font-size="12">position, jersey</text>
+        <text x="60" y="340" font-size="12">school, country</text>
+        <text x="60" y="355" font-size="12">draft_year, draft_round</text>
+        <text x="60" y="370" font-size="12">season_exp</text>
+        <text x="60" y="385" font-size="12">+ team info...</text>
+
+        <!-- Draft History table -->
+        <rect x="320" y="210" width="200" height="180" fill="#e8f4f8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="420" y="235" text-anchor="middle" font-weight="bold" font-size="14">draft_history</text>
+        <line x1="320" y1="245" x2="520" y2="245" stroke="#2c3e50"/>
+        <text x="330" y="265" font-size="12">FK: person_id → player.id</text>
+        <text x="330" y="280" font-size="12">FK: team_id → team.id</text>
+        <text x="330" y="295" font-size="12">season</text>
+        <text x="330" y="310" font-size="12">round_number</text>
+        <text x="330" y="325" font-size="12">round_pick</text>
+        <text x="330" y="340" font-size="12">overall_pick</text>
+        <text x="330" y="355" font-size="12">organization</text>
+
+        <!-- Draft Combine Stats table -->
+        <rect x="320" y="420" width="200" height="150" fill="#e8f4f8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="420" y="445" text-anchor="middle" font-weight="bold" font-size="14">draft_combine_stats</text>
+        <line x1="320" y1="455" x2="520" y2="455" stroke="#2c3e50"/>
+        <text x="330" y="475" font-size="12">FK: player_id → player.id</text>
+        <text x="330" y="490" font-size="12">season</text>
+        <text x="330" y="505" font-size="12">height, weight, wingspan</text>
+        <text x="330" y="520" font-size="12">bench_press</text>
+        <text x="330" y="535" font-size="12">+ shooting stats...</text>
+    </g>
+
+    <!-- Team Entity Group -->
+    <g id="team-group">
+        <!-- Team table -->
+        <rect x="600" y="60" width="200" height="140" fill="#f0e8ff" stroke="#2c3e50" stroke-width="2"/>
+        <text x="700" y="85" text-anchor="middle" font-weight="bold" font-size="14">team</text>
+        <line x1="600" y1="95" x2="800" y2="95" stroke="#2c3e50"/>
+        <text x="610" y="115" font-size="12">PK: id (BIGINT)</text>
+        <text x="610" y="130" font-size="12">full_name</text>
+        <text x="610" y="145" font-size="12">abbreviation</text>
+        <text x="610" y="160" font-size="12">nickname</text>
+        <text x="610" y="175" font-size="12">city, state</text>
+        <text x="610" y="190" font-size="12">year_founded</text>
+
+        <!-- Team Details table -->
+        <rect x="850" y="60" width="200" height="180" fill="#f0e8ff" stroke="#2c3e50" stroke-width="2"/>
+        <text x="950" y="85" text-anchor="middle" font-weight="bold" font-size="14">team_details</text>
+        <line x1="850" y1="95" x2="1050" y2="95" stroke="#2c3e50"/>
+        <text x="860" y="115" font-size="12">FK: team_id → team.id</text>
+        <text x="860" y="130" font-size="12">arena</text>
+        <text x="860" y="145" font-size="12">arenacapacity</text>
+        <text x="860" y="160" font-size="12">owner</text>
+        <text x="860" y="175" font-size="12">generalmanager</text>
+        <text x="860" y="190" font-size="12">headcoach</text>
+        <text x="860" y="205" font-size="12">social media...</text>
+
+        <!-- Team History table -->
+        <rect x="600" y="230" width="200" height="120" fill="#f0e8ff" stroke="#2c3e50" stroke-width="2"/>
+        <text x="700" y="255" text-anchor="middle" font-weight="bold" font-size="14">team_history</text>
+        <line x1="600" y1="265" x2="800" y2="265" stroke="#2c3e50"/>
+        <text x="610" y="285" font-size="12">FK: team_id → team.id</text>
+        <text x="610" y="300" font-size="12">city</text>
+        <text x="610" y="315" font-size="12">nickname</text>
+        <text x="610" y="330" font-size="12">year_founded</text>
+        <text x="610" y="345" font-size="12">year_active_till</text>
+    </g>
+
+    <!-- Game Entity Group -->
+    <g id="game-group">
+        <!-- Game table -->
+        <rect x="50" y="600" width="250" height="200" fill="#ffe8e8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="175" y="625" text-anchor="middle" font-weight="bold" font-size="14">game</text>
+        <line x1="50" y1="635" x2="300" y2="635" stroke="#2c3e50"/>
+        <text x="60" y="655" font-size="12">PK: game_id (VARCHAR)</text>
+        <text x="60" y="670" font-size="12">FK: team_id_home → team.id</text>
+        <text x="60" y="685" font-size="12">FK: team_id_away → team.id</text>
+        <text x="60" y="700" font-size="12">game_date</text>
+        <text x="60" y="715" font-size="12">season_id, season_type</text>
+        <text x="60" y="730" font-size="12">pts_home, pts_away</text>
+        <text x="60" y="745" font-size="12">+ all game stats...</text>
+
+        <!-- Game Info table -->
+        <rect x="330" y="600" width="180" height="100" fill="#ffe8e8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="420" y="625" text-anchor="middle" font-weight="bold" font-size="14">game_info</text>
+        <line x1="330" y1="635" x2="510" y2="635" stroke="#2c3e50"/>
+        <text x="340" y="655" font-size="12">FK: game_id → game.game_id</text>
+        <text x="340" y="670" font-size="12">game_date</text>
+        <text x="340" y="685" font-size="12">attendance</text>
+        <text x="340" y="695" font-size="12">game_time</text>
+
+        <!-- Game Summary table -->
+        <rect x="540" y="600" width="200" height="140" fill="#ffe8e8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="640" y="625" text-anchor="middle" font-weight="bold" font-size="14">game_summary</text>
+        <line x1="540" y1="635" x2="740" y2="635" stroke="#2c3e50"/>
+        <text x="550" y="655" font-size="12">FK: game_id → game.game_id</text>
+        <text x="550" y="670" font-size="12">FK: home_team_id → team.id</text>
+        <text x="550" y="685" font-size="12">FK: visitor_team_id → team.id</text>
+        <text x="550" y="700" font-size="12">game_status_text</text>
+        <text x="550" y="715" font-size="12">season</text>
+        <text x="550" y="730" font-size="12">live_period</text>
+
+        <!-- Line Score table -->
+        <rect x="770" y="600" width="220" height="140" fill="#ffe8e8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="880" y="625" text-anchor="middle" font-weight="bold" font-size="14">line_score</text>
+        <line x1="770" y1="635" x2="990" y2="635" stroke="#2c3e50"/>
+        <text x="780" y="655" font-size="12">FK: game_id → game.game_id</text>
+        <text x="780" y="670" font-size="12">FK: team_id_home → team.id</text>
+        <text x="780" y="685" font-size="12">FK: team_id_away → team.id</text>
+        <text x="780" y="700" font-size="12">pts_qtr1-4_home/away</text>
+        <text x="780" y="715" font-size="12">pts_ot1-10_home/away</text>
+        <text x="780" y="730" font-size="12">pts_home, pts_away</text>
+
+        <!-- Other Stats table -->
+        <rect x="1020" y="600" width="200" height="140" fill="#ffe8e8" stroke="#2c3e50" stroke-width="2"/>
+        <text x="1120" y="625" text-anchor="middle" font-weight="bold" font-size="14">other_stats</text>
+        <line x1="1020" y1="635" x2="1220" y2="635" stroke="#2c3e50"/>
+        <text x="1030" y="655" font-size="12">FK: game_id → game.game_id</text>
+        <text x="1030" y="670" font-size="12">FK: team_id_home → team.id</text>
+        <text x="1030" y="685" font-size="12">FK: team_id_away → team.id</text>
+        <text x="1030" y="700" font-size="12">pts_paint, pts_2nd_chance</text>
+        <text x="1030" y="715" font-size="12">largest_lead</text>
+        <text x="1030" y="730" font-size="12">team_turnovers</text>
+    </g>
+
+    <!-- Play by Play and Related -->
+    <g id="play-by-play-group">
+        <!-- Play by Play table -->
+        <rect x="50" y="830" width="250" height="150" fill="#f0fff0" stroke="#2c3e50" stroke-width="2"/>
+        <text x="175" y="855" text-anchor="middle" font-weight="bold" font-size="14">play_by_play</text>
+        <line x1="50" y1="865" x2="300" y2="865" stroke="#2c3e50"/>
+        <text x="60" y="885" font-size="12">FK: game_id → game.game_id</text>
+        <text x="60" y="900" font-size="12">FK: player1_id → player.id</text>
+        <text x="60" y="915" font-size="12">FK: player2_id → player.id</text>
+        <text x="60" y="930" font-size="12">FK: player3_id → player.id</text>
+        <text x="60" y="945" font-size="12">eventnum, period</text>
+        <text x="60" y="960" font-size="12">descriptions, score</text>
+
+        <!-- Inactive Players table -->
+        <rect x="330" y="830" width="200" height="120" fill="#f0fff0" stroke="#2c3e50" stroke-width="2"/>
+        <text x="430" y="855" text-anchor="middle" font-weight="bold" font-size="14">inactive_players</text>
+        <line x1="330" y1="865" x2="530" y2="865" stroke="#2c3e50"/>
+        <text x="340" y="885" font-size="12">FK: game_id → game.game_id</text>
+        <text x="340" y="900" font-size="12">FK: player_id → player.id</text>
+        <text x="340" y="915" font-size="12">FK: team_id → team.id</text>
+        <text x="340" y="930" font-size="12">jersey_num</text>
+
+        <!-- Officials table -->
+        <rect x="560" y="830" width="180" height="100" fill="#f0fff0" stroke="#2c3e50" stroke-width="2"/>
+        <text x="650" y="855" text-anchor="middle" font-weight="bold" font-size="14">officials</text>
+        <line x1="560" y1="865" x2="740" y2="865" stroke="#2c3e50"/>
+        <text x="570" y="885" font-size="12">FK: game_id → game.game_id</text>
+        <text x="570" y="900" font-size="12">official_id</text>
+        <text x="570" y="915" font-size="12">first_name, last_name</text>
+    </g>
+
+    <!-- Relationships -->
+    <!-- Player to Common Player Info -->
+    <line x1="150" y1="180" x2="150" y2="210" stroke="#3498db" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Player to Draft History -->
+    <line x1="250" y1="120" x2="320" y2="300" stroke="#3498db" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Player to Draft Combine -->
+    <line x1="250" y1="170" x2="320" y2="495" stroke="#3498db" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Team to Team Details -->
+    <line x1="800" y1="130" x2="850" y2="130" stroke="#9b59b6" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Team to Team History -->
+    <line x1="700" y1="200" x2="700" y2="230" stroke="#9b59b6" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Team to Common Player Info -->
+    <line x1="600" y1="130" x2="290" y2="350" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Team to Game (Home) -->
+    <line x1="600" y1="180" x2="175" y2="600" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Team to Game (Away) -->
+    <line x1="650" y1="200" x2="225" y2="600" stroke="#e74c3c" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Game to related tables -->
+    <line x1="300" y1="650" x2="330" y2="650" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="300" y1="700" x2="540" y2="670" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="300" y1="720" x2="770" y2="670" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="300" y1="740" x2="1020" y2="670" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Game to Play by Play -->
+    <line x1="175" y1="800" x2="175" y2="830" stroke="#27ae60" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Game to Inactive Players -->
+    <line x1="250" y1="800" x2="430" y2="830" stroke="#27ae60" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Game to Officials -->
+    <line x1="275" y1="800" x2="650" y2="830" stroke="#27ae60" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+    <!-- Arrow marker definition -->
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+        </marker>
+    </defs>
+
+    <!-- Legend -->
+    <rect x="1100" y="80" width="250" height="150" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1"/>
+    <text x="1225" y="100" text-anchor="middle" font-weight="bold" font-size="14">Legend</text>
+    <rect x="1110" y="110" width="30" height="15" fill="#e8f4f8"/>
+    <text x="1150" y="122" font-size="12">Player Entities</text>
+    <rect x="1110" y="130" width="30" height="15" fill="#f0e8ff"/>
+    <text x="1150" y="142" font-size="12">Team Entities</text>
+    <rect x="1110" y="150" width="30" height="15" fill="#ffe8e8"/>
+    <text x="1150" y="162" font-size="12">Game Entities</text>
+    <rect x="1110" y="170" width="30" height="15" fill="#f0fff0"/>
+    <text x="1150" y="182" font-size="12">Game Detail Entities</text>
+    <text x="1110" y="205" font-size="12">PK = Primary Key</text>
+    <text x="1110" y="220" font-size="12">FK = Foreign Key</text>
+</svg>

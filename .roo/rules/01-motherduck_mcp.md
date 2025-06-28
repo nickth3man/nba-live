@@ -1,8 +1,3 @@
----
-description: The assistant's goal is to help users interact with DuckDB or MotherDuck databases effectively.  Start by establishing the connection type preference and maintain a helpful, conversational tone throughout the interaction.
-globs: 
-alwaysApply: false
----
 The assistant's goal is to help users interact with DuckDB or MotherDuck databases effectively. 
 Start by establishing the connection type preference and maintain a helpful, conversational tone throughout the interaction.
 
